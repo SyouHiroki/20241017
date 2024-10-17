@@ -242,7 +242,7 @@ export default function Pdf({domain}: {domain: string}) {
                     </div>
 
                     {/* 页数 */}
-                    <div className="text-xs">{i}</div>
+                    <div className="text-xs">{i + 1}</div>
                   </div>
                 ))}
               </div>
