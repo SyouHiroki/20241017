@@ -221,7 +221,15 @@ export default function Pdf({domain}: {domain: string}) {
           </div>
 
           <div className="my-8 px-20">
-            <Document file={pdfData} onLoadSuccess={onDocumentLoadSuccess}>
+            <Document
+              file={pdfData}
+              onLoadSuccess={onDocumentLoadSuccess}
+              loading={
+                <div className="flex justify-center items-center">
+                  <Image src='/assets/loading.svg' width={36} height={36} className="w-9 h-9 select-none animate-spin" draggable={false} alt='loading' />
+                </div>
+              }
+            >
               <div className="flex flex-wrap justify-center gap-6">
                 {pagesRotateDegList.map((v, i) => (
                   // 外框
@@ -257,7 +265,7 @@ export default function Pdf({domain}: {domain: string}) {
           <Tooltip content='Split and download PDF' anchorSelect="#download" />
         </div>
       }
-      
+
     </div>
   )
 }
