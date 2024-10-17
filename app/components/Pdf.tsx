@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { pdfjs, Document, Page } from 'react-pdf'
 import { degrees, PDFDocument } from 'pdf-lib'
+import { Tooltip } from 'react-tooltip'
 import Image from "next/image"
 import 'react-pdf/dist/Page/TextLayer.css'
 import 'react-pdf/dist/Page/AnnotationLayer.css'
@@ -165,9 +166,9 @@ export default function Pdf({domain}: {domain: string}) {
   }
 
   return (
-    <div className="bg-[#f7f5ef] py-20 flex flex-col items-center">
+    <div className="bg-[#f7f5ef] py-20 flex flex-col items-center text-center">
       <h1 className="text-5xl font-serif">Rotate PDF Pages</h1>
-      <p className="my-8 text-gray-600 max-w-lg mx-auto text-center">Simply click on a page to rotate it. You can then download your modified PDF.</p>
+      <p className="my-8 text-gray-600 max-w-lg mx-auto">Simply click on a page to rotate it. You can then download your modified PDF.</p>
 
       {!pdfData &&
         <div
@@ -188,22 +189,32 @@ export default function Pdf({domain}: {domain: string}) {
           {/* 按钮组 */}
           <div className="text-white font-medium flex gap-3 justify-center">
             <div className="rounded-md bg-[#ff612f] p-2 cursor-pointer duration-100 hover:scale-[1.02] shadow select-none" onClick={handleRotateAll}>Rotate all</div>
-            <div className="rounded-md bg-[#1f2937] p-2 cursor-pointer duration-100 hover:scale-[1.02] shadow select-none" onClick={handleRemovePDF}>Remove PDF</div>
+
+            <div id='removePDF' className="rounded-md bg-[#1f2937] p-2 cursor-pointer duration-100 hover:scale-[1.02] shadow select-none" onClick={handleRemovePDF}>
+              Remove PDF
+              <Tooltip content='Remove this PDF and select a new one' anchorSelect="#removePDF" />
+            </div>
+
             <div
               className="rounded-full bg-white w-10 h-10 flex justify-center items-center duration-100 hover:scale-[1.05] relative shadow"
               onClick={handleZoomIn}
               style={gear === MAX_GEAR ? {cursor: 'default'} : {cursor: 'pointer'}}
+              id='zoomIn'
             >
               {gear === MAX_GEAR && <div className="absolute w-10 h-10 rounded-full bg-[rgba(225,225,225,0.4)] top-0 left-0"></div>}
               <Image src='/assets/zoom-in.svg' width={20} height={20} className="w-5 h-5 select-none" draggable={false} alt='zoom-in' />
+              <Tooltip content='Zoom in' anchorSelect="#zoomIn" />
             </div>
+
             <div
               className="rounded-full bg-white w-10 h-10 flex justify-center items-center duration-100 hover:scale-[1.05] relative shadow"
               onClick={handleZoomOut}
               style={gear === MIN_GEAR ? {cursor: 'default'} : {cursor: 'pointer'}}
+              id='zoomOut'
             >
               {gear === MIN_GEAR && <div className="absolute w-10 h-10 rounded-full bg-[rgba(225,225,225,0.4)] top-0 left-0"></div>}
               <Image src='/assets/zoom-out.svg' width={20} height={20} className="w-5 h-5 select-none" draggable={false} alt='zoom-out' />
+              <Tooltip content='Zoom out' anchorSelect="#zoomOut" />
             </div>
           </div>
 
@@ -239,7 +250,10 @@ export default function Pdf({domain}: {domain: string}) {
       }
 
       {pdfData &&
-        <div className="rounded-md bg-[#ff612f] p-2 text-white font-medium cursor-pointer duration-100 hover:scale-[1.02] shadow select-none" onClick={exportPdfWithRotations}>Download</div>
+        <div className="rounded-md bg-[#ff612f] p-2 text-white font-medium cursor-pointer duration-100 hover:scale-[1.02] shadow select-none" onClick={exportPdfWithRotations} id='download'>
+          Download
+          <Tooltip content='Split and download PDF' anchorSelect="#download" />
+        </div>
       }
       
     </div>
