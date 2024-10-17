@@ -20,6 +20,11 @@ export default function Pdf() {
     const file = event.target.files?.[0]
   
     if (file) {
+      if (file.type !== 'application/pdf') {
+        console.error('file type error: not pdf file.')
+        return
+      }
+
       const fileNameArr = file.name.split('.')
       fileNameArr.pop()
       setFileName(fileNameArr.join())
@@ -75,7 +80,7 @@ export default function Pdf() {
 
   return (
     <div>
-      <Document file={pdfData} onLoadSuccess={onDocumentLoadSuccess} >
+      <Document file={pdfData} onLoadSuccess={onDocumentLoadSuccess}>
         {pagesRotateDegList.map((v, i) => <Page rotate={pagesRotateDegList[i]} pageNumber={i + 1} key={i + 1} onClick={() => handlePageRotate(i)} />)}
       </Document>
 
