@@ -15,13 +15,13 @@ export default function Footer({text, navsGroup}: {text: string, navsGroup: Foot
     <div className="mb-10 mt-8 md:mt-12 lg:mt-16 xl:flex xl:justify-center">
       <div className="border-t p-2 flex flex-col xl:flex-row xl:gap-9 xl:w-[1280px]">
         <div className="mt-12 px-2 xl:max-w-[384px]">
-          <Image src='/favicon.ico' width={28} height={28} className="w-7 h-7 mb-8" alt='favicon' />
+          <Image src='/favicon.ico' width={28} height={28} draggable={false} className="w-7 h-7 mb-8" alt='favicon' />
           <p className="text-[#9ea3af] text-sm">{text}</p>
           <div className="flex gap-4 items-center mt-8">
-            <Link href={'/'}><Image src='/assets/tiktok.svg' width={24} height={24} className="w-6 h-6" alt='tiktok' /></Link>
-            <Link href={'/'}><Image src='/assets/ins.svg' width={28} height={28} className="w-7 h-7" alt='ins' /></Link>
-            <Link href={'/'}><Image src='/assets/twtter.svg' width={24} height={24} className="w-6 h-6" alt='twtter' /></Link>
-            <Link href={'/'}><Image src='/assets/youtube.svg' width={28} height={28} className="w-7 h-7" alt='youtube' /></Link>
+            <Link href={'/'}><Image src='/assets/tiktok.svg' draggable={false} width={24} height={24} className="w-6 h-6" alt='tiktok' /></Link>
+            <Link href={'/'}><Image src='/assets/ins.svg' draggable={false} width={28} height={28} className="w-7 h-7" alt='ins' /></Link>
+            <Link href={'/'}><Image src='/assets/twtter.svg' draggable={false} width={24} height={24} className="w-6 h-6" alt='twtter' /></Link>
+            <Link href={'/'}><Image src='/assets/youtube.svg' draggable={false} width={28} height={28} className="w-7 h-7" alt='youtube' /></Link>
           </div>
         </div>
 

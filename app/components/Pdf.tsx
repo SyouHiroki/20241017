@@ -12,10 +12,18 @@ pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   import.meta.url,
 ).toString()
 
-export default function Pdf() {
+const MAX_GEAR = 5
+const MIN_GEAR = 0
+const DEFAULT_GEAR = 2
+const DEFAULT_PAGES_WIDTH = {outter: 200, inner: 176}
+const DEFAULT_RATIO = 1.5
+
+export default function Pdf({domain}: {domain: string}) {
   const [pdfData, setPdfData] = useState<string>('')
   const [fileName, setFileName] = useState<string>('')
   const [pagesRotateDegList, setPagesRotateDegList] = useState<number[]>([])
+  const [pagesWidth, setPagesWidth] = useState<{outter: number, inner: number}>(DEFAULT_PAGES_WIDTH)
+  const [gear, setGear] = useState<number>(DEFAULT_GEAR)
   const [isDragOver, setIsDragOver] = useState<boolean>(false)
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -92,10 +100,9 @@ export default function Pdf() {
 
   const handlePageRotate = (pageNumber: number) => {
     setPagesRotateDegList(preState => {
-      let deg = preState[pageNumber]
+      const deg = preState[pageNumber]
       const newState = [...preState]
-      deg = deg + 90 >= 360 ? 0 : deg + 90
-      newState[pageNumber] = deg
+      newState[pageNumber] = deg + 90
       return newState
     })
   }
@@ -104,7 +111,7 @@ export default function Pdf() {
     setPagesRotateDegList(preState => {
       const newState = [...preState]
       newState.forEach((deg, i) => {
-        newState[i] = deg + 90 >= 360 ? 0 : deg + 90
+        newState[i] = deg + 90
       })
       return newState
     })
@@ -112,6 +119,20 @@ export default function Pdf() {
 
   const handleRemovePDF = () => {
     setPdfData('')
+    setGear(DEFAULT_GEAR)
+    setPagesWidth(DEFAULT_PAGES_WIDTH)
+  }
+
+  const handleZoomIn = () => {
+    if (gear === MAX_GEAR) return
+    setGear(preState => preState + 1)
+    setPagesWidth(preState => ({outter: preState.outter * DEFAULT_RATIO, inner: preState.inner * DEFAULT_RATIO}))
+  }
+
+  const handleZoomOut = () => {
+    if (gear === MIN_GEAR) return
+    setGear(preState => preState - 1)
+    setPagesWidth(preState => ({outter: preState.outter / DEFAULT_RATIO, inner: preState.inner / DEFAULT_RATIO}))
   }
 
   const onDocumentLoadSuccess = ({ numPages }: { numPages: number }): void => {
@@ -138,7 +159,7 @@ export default function Pdf() {
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = fileName.replace('.pdf', `${fileName}_${new Date().getTime()}.pdf`)
+    a.download = fileName.replace('.pdf', `${fileName}(${domain}-rotated).pdf`)
     a.click()
     URL.revokeObjectURL(url)
   }
@@ -157,27 +178,70 @@ export default function Pdf() {
           className='border border-[#bfccdd] w-[275px] h-[350px] rounded-md flex flex-col gap-3 items-center justify-center cursor-pointer duration-150'
           style={isDragOver ? {backgroundColor: '#ebebeb', borderStyle: 'solid'} : {backgroundColor: '#ffffff', borderStyle: 'dashed'}}
         >
-          <Image src='/assets/upload.svg' width={32} height={32} className="w-8 h-8" alt='logo' />
+          <Image src='/assets/upload.svg' draggable={false} width={32} height={32} className="w-8 h-8" alt='upload' />
           <p className="font-medium text-sm leading-6 pointer opacity-75">Click to upload or drag and drop</p>
         </div>
       }
 
       {pdfData &&
         <div>
+          {/* 按钮组 */}
           <div className="text-white font-medium flex gap-3 justify-center">
-            <div className="rounded-md bg-[#ff612f] p-2 cursor-pointer" onClick={handleRotateAll}>Rotate all</div>
-            <div className='rounded-md bg-[#1f2937] p-2 cursor-pointer' onClick={handleRemovePDF}>Remove PDF</div>
+            <div className="rounded-md bg-[#ff612f] p-2 cursor-pointer duration-100 hover:scale-[1.02] shadow select-none" onClick={handleRotateAll}>Rotate all</div>
+            <div className="rounded-md bg-[#1f2937] p-2 cursor-pointer duration-100 hover:scale-[1.02] shadow select-none" onClick={handleRemovePDF}>Remove PDF</div>
+            <div
+              className="rounded-full bg-white w-10 h-10 flex justify-center items-center duration-100 hover:scale-[1.05] relative shadow"
+              onClick={handleZoomIn}
+              style={gear === MAX_GEAR ? {cursor: 'default'} : {cursor: 'pointer'}}
+            >
+              {gear === MAX_GEAR && <div className="absolute w-10 h-10 rounded-full bg-[rgba(225,225,225,0.4)] top-0 left-0"></div>}
+              <Image src='/assets/zoom-in.svg' width={20} height={20} className="w-5 h-5 select-none" draggable={false} alt='zoom-in' />
+            </div>
+            <div
+              className="rounded-full bg-white w-10 h-10 flex justify-center items-center duration-100 hover:scale-[1.05] relative shadow"
+              onClick={handleZoomOut}
+              style={gear === MIN_GEAR ? {cursor: 'default'} : {cursor: 'pointer'}}
+            >
+              {gear === MIN_GEAR && <div className="absolute w-10 h-10 rounded-full bg-[rgba(225,225,225,0.4)] top-0 left-0"></div>}
+              <Image src='/assets/zoom-out.svg' width={20} height={20} className="w-5 h-5 select-none" draggable={false} alt='zoom-out' />
+            </div>
           </div>
 
-          <Document file={pdfData} onLoadSuccess={onDocumentLoadSuccess}>
-            {pagesRotateDegList.map((v, i) => <Page rotate={pagesRotateDegList[i]} pageNumber={i + 1} key={i + 1} onClick={() => handlePageRotate(i)} />)}
-          </Document>
+          <div className="my-8 px-20">
+            <Document file={pdfData} onLoadSuccess={onDocumentLoadSuccess}>
+              <div className="flex flex-wrap justify-center gap-6">
+                {pagesRotateDegList.map((v, i) => (
+                  // 外框
+                  <div
+                    key={i + 1}
+                    className="bg-white overflow-hidden relative cursor-pointer p-3 flex justify-center items-center flex-col hover:bg-[#ebebeb] duration-100 shadow"
+                    onClick={() => handlePageRotate(i)}
+                    style={{width: `${pagesWidth.outter}px`}}
+                  >
+                    {/* 旋转角标图标 */}
+                    <div className="absolute bg-[#ff612f] h-5 w-5 rounded-full z-50 right-1 top-1 flex justify-center items-center hover:scale-[1.1] duration-100 shadow">
+                      <Image src='/assets/rotate.svg' width={12} height={12} className="w-3 h-3 select-none" alt='rotate' draggable={false} />
+                    </div>
+
+                    {/* pdf的其中一页 */}
+                    <div className="duration-100" style={{transform: `rotate(${pagesRotateDegList[i]}deg)`}}>
+                      <Page pageNumber={i + 1} width={pagesWidth.inner} className="pointer-events-none" />
+                    </div>
+
+                    {/* 页数 */}
+                    <div className="text-xs">{i}</div>
+                  </div>
+                ))}
+              </div>
+            </Document>
+          </div>
         </div>
       }
 
+      {pdfData &&
+        <div className="rounded-md bg-[#ff612f] p-2 text-white font-medium cursor-pointer duration-100 hover:scale-[1.02] shadow select-none" onClick={exportPdfWithRotations}>Download</div>
+      }
       
-
-      {/* <button onClick={exportPdfWithRotations}>export pdf</button> */}
     </div>
   )
 }

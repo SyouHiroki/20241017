@@ -47,11 +47,13 @@ export default function Home() {
       {text: 'Investor', link: '/'}
     ]
   }
+
+  const domain = 'pdf.syouhiroki.icu'
   
   return (
     <div>
       <Header logoLink={headerLogoLink} navsLink={headerNavsLink}/>
-      <Pdf />
+      <Pdf domain={domain}/>
       <Footer text={footerText} navsGroup={footerNavsGroup}/>
     </div>
   )

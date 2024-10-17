@@ -15,7 +15,7 @@ export default function Header({navsLink, logoLink} : {navsLink: HeaderNavsLinkT
   return (
     <div className="p-2 flex justify-between">
       <Link className="flex items-center px-2" href={logoLink.link}>
-        <Image src='/assets/logo.svg' width={32} height={32} className="w-8 h-8" alt='logo' />
+        <Image src='/assets/logo.svg' draggable={false} width={32} height={32} className="w-8 h-8" alt='logo' />
         <div className="font-extrabold text-2xl py-2" style={{fontFamily: 'Tiempos, serif'}}>{logoLink.text}</div>
       </Link>
 
@@ -26,7 +26,7 @@ export default function Header({navsLink, logoLink} : {navsLink: HeaderNavsLinkT
 
       {/* sm */}
       <div className="font-medium items-center flex md:hidden flex-shrink-0">
-        <Image src={menuIsOpen ? '/assets/close.svg' : '/assets/menu.svg'} width={28} height={28} className="w-7 h-7" alt='menu' onClick={() => setMenuIsOpen(!menuIsOpen)}/>
+        <Image src={menuIsOpen ? '/assets/close.svg' : '/assets/menu.svg'} draggable={false} width={28} height={28} className="w-7 h-7" alt='menu' onClick={() => setMenuIsOpen(!menuIsOpen)}/>
 
         {menuIsOpen &&
           <div className="absolute left-0 top-16 border-t flex flex-col w-full py-4 bg-white">
